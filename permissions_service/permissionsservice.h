@@ -1,7 +1,7 @@
 #ifndef PERMISSIONSSERVICE_H
 #define PERMISSIONSSERVICE_H
 
-#define SERVICE_NAME "com.system.permissions"
+#define SERVICE_NAME "com.system.permissionsservice"
 
 #include <stdio.h>
 
@@ -19,16 +19,15 @@ class PermissionsService : public QDBusAbstractAdaptor
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", SERVICE_NAME)
 public:
-    explicit PermissionsService(QObject* parent);
+    explicit PermissionsService(QObject* parent = nullptr);
+    ~PermissionsService() override;
 
 public slots:
-    void RequestPermission(int);
-    bool CheckApplicationHasPermission(const QString&, int);
+    Q_INVOKABLE void RequestPermission(int);
+    Q_INVOKABLE bool CheckApplicationHasPermission(const QString&, int);
 
 private:
     QSqlDatabase db;
-    //  возможно нужен QDBusConnectionInterface
-    QDBusConnectionInterface *interface = nullptr;
 
     QSqlQuery* executeQuery(const QString &);
     bool CheckQueryResult(QSqlQuery*);

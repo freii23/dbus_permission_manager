@@ -1,29 +1,23 @@
 #include "permissionsservice.h"
 
 PermissionsService::PermissionsService(QObject *parent)
-    : QDBusAbstractAdaptor{parent}
+    : QDBusAbstractAdaptor(parent)
 {
-    // getting bus and interface
+    // bus connection
     QDBusConnection bus = QDBusConnection::sessionBus();
-    if (!bus.isConnected()) {
-        fprintf(stderr, "Cannot connect to the D-Bus session bus.\n"
-                "To start it, run:\n"
-                "\teval `dbus-launch --auto-syntax`\n");
-        return;
-    }
-//  возможно нужен QDBusConnectionInterface
-    QDBusConnectionInterface *iface = bus.interface();
 
-    if (!iface->isValid()) {
-        qDebug() << "Invalid interface" << iface->lastError();
-        return;
-    }
-
-    this->interface = iface;
+    if (!bus.interface()->isServiceRegistered(QStringLiteral("com.system.permissionsservice"))) {
+        bus.registerService(QStringLiteral("com.system.permissionsservice"));
+        bus.registerObject(QStringLiteral("/"), "com.system.permissionsservice", parent,
+                           QDBusConnection::ExportAdaptors | QDBusConnection::ExportAllSlots);
+        qDebug() << "new service registeres";
+       }
+       else {
+        qDebug() << "service is taken";
+       }
 
     // db connection
-    if (!this->db.open())
-    {
+    if (!this->db.open()) {
         this->db = QSqlDatabase::addDatabase("QSQLITE", "dbcon");
         this->db.setDatabaseName("test_case_omp_db");
         this->db.setHostName("127.0.0.1");
@@ -44,10 +38,15 @@ PermissionsService::PermissionsService(QObject *parent)
     }
 }
 
+PermissionsService::~PermissionsService() {
+//    QDBusConnection bus = QDBusConnection::sessionBus();
+//    bus.unregisterObject("com.system.permissionsservice");
+//    bus.unregisterService("com.system.permissionsservice");
+}
 
 void PermissionsService::RequestPermission(int permissionEnumCode)
 {
-    QDBusReply<uint> reply = this->interface->call("GetConnectionUnixProcessID", SERVICE_NAME);
+    QDBusReply<uint> reply = QDBusConnection::sessionBus().interface()->call("GetConnectionUnixProcessID", SERVICE_NAME);
     if (!reply.isValid()) {
         qDebug() << "Не удалось получить PID для сервиса:" << reply.error().message();
         return;

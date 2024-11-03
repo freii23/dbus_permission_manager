@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 8.0.2, 2024-10-28T13:20:41. -->
+<!-- Written by QtCreator 8.0.2, 2024-10-29T12:45:57. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -235,9 +235,8 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">permission_service2</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/sandor/prog/test_case_omp/permissions_service/permission_service.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/sandor/prog/test_case_omp/permissions_service/permission_service.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/sandor/prog/test_case_omp/dbus_permission_manager/permissions_service/permission_service.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/sandor/prog/test_case_omp/dbus_permission_manager/permissions_service/permission_service.pro</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
