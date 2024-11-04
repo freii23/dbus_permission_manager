@@ -6,9 +6,9 @@ TimeService::TimeService(QObject *parent)
     // bus connection
     QDBusConnection bus = QDBusConnection::sessionBus();
 
-    if (!bus.interface()->isServiceRegistered(QStringLiteral("com.system.timeservice"))) {
-        bus.registerService(QStringLiteral("com.system.timeservice"));
-        bus.registerObject(QStringLiteral("/"), "com.system.timeservice", parent,
+    if (!bus.interface()->isServiceRegistered(QStringLiteral(TIME_NAME))) {
+        bus.registerService(QStringLiteral(TIME_NAME));
+        bus.registerObject(QStringLiteral("/"), QStringLiteral(TIME_NAME), parent,
                            QDBusConnection::ExportAdaptors | QDBusConnection::ExportAllSlots);
         qDebug() << "new time service registered";
     }
@@ -26,29 +26,29 @@ quint64 TimeService::GetSystemTime()
 {
     quint64 res = 0;
     // Создаем интерфейс для вызова метода на permissions_service
-    QDBusInterface interface("com.system.permissionsservice",
+    QDBusInterface interface(PERM_NAME,
                              "/",
-                             "com.system.permissionsservice",
+                             PERM_NAME,
                              QDBusConnection::sessionBus());
 
     if (!interface.isValid()) {
         qDebug() << "Не удалось создать интерфейс для com.system.permissionsservice:" << interface.lastError().message();
-        return -1;
+        return 1;
     }
 
     QString path;
     // Вызываем метод getExecPath
-    QDBusReply<QString> reply1 = interface.call("GetExecPath");
+    QDBusReply<QString> reply1 = interface.call("GetExecPath", CLIENT_NAME);
     if (reply1.isValid()) {
         path = reply1.value();
         qDebug() << "Ответ от GetExecPath:" << path;
     } else {
         qDebug() << "Ошибка при вызове метода GetExecPath:" << reply1.error().message();
-        return -1;
+        return 1;
     }
 
     // Вызываем метод check и передаем ему аргументы
-    QDBusReply<bool> reply2 = interface.call("CheckApplicationHasPermission", path, 0);
+    QDBusReply<bool> reply2 = interface.call("CheckApplicationHasPermission", path, int(0));
     if (reply2.isValid()) {
         qDebug() << "Ответ от CheckApplicationHasPermission:" << reply2.value();
         if (reply2.value()) {
@@ -56,7 +56,7 @@ quint64 TimeService::GetSystemTime()
         }
         else {
             qDebug() << "UnauthorizedAccess";
-            res = -2;
+            res = 2;
         }
     } else {
         qDebug() << "Ошибка при вызове метода CheckApplicationHasPermission:" << reply2.error().message();

@@ -1,17 +1,17 @@
 #include <QCoreApplication>
-#include <QtDBus>
-
-const QString permission_name = "com.system.permissionsservice";
-const QString time_name = "com.system.timeservice";
+#include "testservice.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
+    QDBusAbstractAdaptor::QObject parent_object;
+    TestService p(&parent_object);
+
     // подрубаем интерфес сервиса разрешений
-    QDBusInterface interface_time(time_name,
+    QDBusInterface interface_time(TIME_NAME,
                              "/",
-                             time_name,
+                             TIME_NAME,
                              QDBusConnection::sessionBus());
 
     if (!interface_time.isValid()) {
