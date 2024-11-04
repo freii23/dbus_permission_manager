@@ -10,11 +10,11 @@ PermissionsService::PermissionsService(QObject *parent)
         bus.registerService(QStringLiteral("com.system.permissionsservice"));
         bus.registerObject(QStringLiteral("/"), "com.system.permissionsservice", parent,
                            QDBusConnection::ExportAdaptors | QDBusConnection::ExportAllSlots);
-        qDebug() << "new service registeres";
-       }
-       else {
-        qDebug() << "service is taken";
-       }
+        qDebug() << "new permission service registered";
+    }
+    else {
+        qDebug() << "permission service is taken";
+    }
 
     // db connection
     if (!this->db.open()) {
@@ -46,35 +46,20 @@ PermissionsService::~PermissionsService() {
 
 void PermissionsService::RequestPermission(int permissionEnumCode)
 {
-    QDBusReply<uint> reply = QDBusConnection::sessionBus().interface()->call("GetConnectionUnixProcessID", SERVICE_NAME);
-    if (!reply.isValid()) {
-        qDebug() << "Не удалось получить PID для сервиса:" << reply.error().message();
+    QString path = this->GetExecPath();
+    QSqlQuery *query = this->executeQuery("INSERT INTO logs"
+                                    "(filepath, perm_code)"
+                                    "VALUES('"+path+"', "+permissionEnumCode+");");
+    if (!this->CheckQueryResult(query)) {
         return;
     }
-
-    uint pid = reply.value();
-    qDebug() << "PID клиента:" << pid;
-
-    // Читаем символьную ссылку /proc/<pid>/exe, чтобы получить путь к исполняемому файлу
-    QString exePath = QString("/usr/bin/%1").arg(pid);
-    QFileInfo fileInfo(exePath);
-
-    if (fileInfo.exists() && fileInfo.isSymLink()) {
-        QString path = fileInfo.symLinkTarget();
-        QSqlQuery *query = this->executeQuery("INSERT INTO logs"
-                                        "(filepath, perm_code)"
-                                        "VALUES('"+path+"', "+permissionEnumCode+");");
-        if (!this->CheckQueryResult(query)) {
-            return;
-        }
-        query->finish();
-        delete query;
-    }
+    query->finish();
+    delete query;
 }
 
 bool PermissionsService::CheckApplicationHasPermission(const QString &applicationExecPath, int permissionEnumCode)
 {
-    QSqlQuery *query = this->executeQuery("select exists (select 1 from permissions "
+    QSqlQuery *query = this->executeQuery("select exists (select 1 from logs "
                                     "where filepath ='"+applicationExecPath+"' and"
                                     "permission_code ="+permissionEnumCode+");");
     if (!this->CheckQueryResult(query)) {
@@ -85,6 +70,27 @@ bool PermissionsService::CheckApplicationHasPermission(const QString &applicatio
     query->finish();
     delete query;
     return out;
+}
+
+QString PermissionsService::GetExecPath()
+{
+    QString path;
+    QDBusReply<uint> reply = QDBusConnection::sessionBus().interface()->call("GetConnectionUnixProcessID", SERVICE_NAME);
+    if (!reply.isValid()) {
+        qDebug() << "Не удалось получить PID для сервиса:" << reply.error().message();
+        return path;
+    }
+
+    uint pid = reply.value();
+    qDebug() << "PID клиента:" << pid;
+
+    // Читаем символьную ссылку /proc/<pid>/exe, чтобы получить путь к исполняемому файлу
+    QString exePath = QString("/usr/bin/%1").arg(pid);
+    QFileInfo fileInfo(exePath);
+    if (fileInfo.exists() && fileInfo.isSymLink()) {
+        path = fileInfo.symLinkTarget();
+    }
+    return path;
 }
 
 QSqlQuery *PermissionsService::executeQuery(const QString &queryString)

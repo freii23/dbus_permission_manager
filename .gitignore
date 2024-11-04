@@ -1,1 +1,3 @@
-permissions_service/permission_service.pro.user
+*pro.user*
+build-test_drive-Desktop-Debug/*
+build-time_service-Desktop-Debug/*

@@ -25,7 +25,7 @@ public:
 public slots:
     Q_INVOKABLE void RequestPermission(int);
     Q_INVOKABLE bool CheckApplicationHasPermission(const QString&, int);
-
+    Q_INVOKABLE QString GetExecPath();
 private:
     QSqlDatabase db;
 
