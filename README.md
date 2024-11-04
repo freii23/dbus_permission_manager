@@ -5,7 +5,9 @@
 
 Также необходимо создать таблицу logs, вот ее код:
 CREATE TABLE logs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, -- Автоинкрементное поле
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
     filepath NVARCHAR(120),
     perm_code INTEGER
 );
+
+по ТЗ требовалось всего 2 метода в permission service, но я добавил ещё один, который узнает путь до исполняемого файла. Также не совсем понятно, как с заданным набором параметров в функции RequestPermission можно получить этот самый путь (по идее, должен быть еще один параметр, принимающий dbus имя сервиса, вызывающего наш - в моем случае это com.system.test, в ТЗ это был com.example.example - 3 часть ТЗ), поэтому пока что захардкодил.
