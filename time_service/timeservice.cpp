@@ -52,7 +52,8 @@ quint64 TimeService::GetSystemTime()
     if (reply2.isValid()) {
         qDebug() << "Ответ от CheckApplicationHasPermission:" << reply2.value();
         if (reply2.value()) {
-            res = QDateTime::currentDateTime().toString("yyyyMMddhhmmss").toUInt();
+            res = QDateTime::currentDateTime().toString("yyyyMMddhhmmss").toULongLong();
+            qDebug() << "res = " << res;
         }
         else {
             qDebug() << "UnauthorizedAccess";

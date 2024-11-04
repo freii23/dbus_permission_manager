@@ -54,7 +54,7 @@ void PermissionsService::RequestPermission(int permissionEnumCode)
     queryStr += "VALUES('";
     queryStr += path;
     queryStr += "', ";
-    queryStr += permissionEnumCode;
+    queryStr += QString::number(permissionEnumCode);
     queryStr += ");";
     qDebug() << queryStr;
 
