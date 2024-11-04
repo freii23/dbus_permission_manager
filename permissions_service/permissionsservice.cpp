@@ -39,15 +39,14 @@ PermissionsService::PermissionsService(QObject *parent)
 }
 
 PermissionsService::~PermissionsService() {
-//    QDBusConnection bus = QDBusConnection::sessionBus();
-//    bus.unregisterObject("com.system.permissionsservice");
-//    bus.unregisterService("com.system.permissionsservice");
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    bus.unregisterObject(QStringLiteral("/"));
+    bus.unregisterService(QStringLiteral(PERM_NAME));
 }
 
 void PermissionsService::RequestPermission(int permissionEnumCode)
 {
     QString path = this->GetExecPath(QStringLiteral(CLIENT_NAME));
-    qDebug() << "perm_service: execPath = " << path;
 
     QString queryStr = "INSERT INTO logs ";
     queryStr += "(filepath, perm_code) ";
@@ -56,7 +55,6 @@ void PermissionsService::RequestPermission(int permissionEnumCode)
     queryStr += "', ";
     queryStr += QString::number(permissionEnumCode);
     queryStr += ");";
-    qDebug() << queryStr;
 
     QSqlQuery *query = this->executeQuery(queryStr);
     if (!this->CheckQueryResult(query)) {
@@ -74,7 +72,6 @@ bool PermissionsService::CheckApplicationHasPermission(const QString &applicatio
     queryStr += "' and perm_code = ";
     queryStr += QString::number(permissionEnumCode);
     queryStr += ");";
-    qDebug() << queryStr;
 
     QSqlQuery *query = this->executeQuery(queryStr);
     if (!this->CheckQueryResult(query)) {
@@ -96,7 +93,6 @@ QString PermissionsService::GetExecPath(const QString& client_path)
     }
 
     uint pid = reply.value();
-    qDebug() << "PID клиента:" << pid;
 
     // ищем путь по pid с помощью консольной команды
     QProcess process;

@@ -19,7 +19,9 @@ TimeService::TimeService(QObject *parent)
 
 TimeService::~TimeService()
 {
-
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    bus.unregisterObject(QStringLiteral("/"));
+    bus.unregisterService(QStringLiteral(TIME_NAME));
 }
 
 quint64 TimeService::GetSystemTime()
@@ -53,7 +55,6 @@ quint64 TimeService::GetSystemTime()
         qDebug() << "Ответ от CheckApplicationHasPermission:" << reply2.value();
         if (reply2.value()) {
             res = QDateTime::currentDateTime().toString("yyyyMMddhhmmss").toULongLong();
-            qDebug() << "res = " << res;
         }
         else {
             qDebug() << "UnauthorizedAccess";

@@ -18,7 +18,7 @@ TestService::TestService(QObject *parent)
 }
 
 TestService::~TestService() {
-//    QDBusConnection bus = QDBusConnection::sessionBus();
-//    bus.unregisterObject("com.system.permissionsservice");
-//    bus.unregisterService("com.system.permissionsservice");
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    bus.unregisterObject(QStringLiteral("/"));
+    bus.unregisterService(QStringLiteral(CLIENT_NAME));
 }
