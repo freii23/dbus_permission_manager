@@ -19,7 +19,7 @@ PermissionsService::PermissionsService(QObject *parent)
     // db connection
     if (!this->db.open()) {
         this->db = QSqlDatabase::addDatabase("QSQLITE", "dbcon");
-        this->db.setDatabaseName("/home/sandor/prog/test_case_omp/test_case_omp_db");
+        this->db.setDatabaseName("/home/sandor/prog/test_case_omp/test_case_omp_db.db");
 //        this->db.setHostName("127.0.0.1");
 //        this->db.setUserName();
 //        this->db.setPassword();
@@ -71,7 +71,7 @@ bool PermissionsService::CheckApplicationHasPermission(const QString &applicatio
     QString queryStr = "select exists (select 1 from logs ";
     queryStr += "where filepath = '";
     queryStr += applicationExecPath;
-    queryStr += "' and permission_code = ";
+    queryStr += "' and perm_code = ";
     queryStr += QString::number(permissionEnumCode);
     queryStr += ");";
     qDebug() << queryStr;
